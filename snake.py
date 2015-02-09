@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """snake implementation in python using pygame
 """
 
@@ -7,9 +7,13 @@ import pygame
 import time
 import random
 
-WAIT	= 0.05
+# 1 ... 10
+DIFFICULTY = 1
+
+START_LENGTH = 10
+WAIT	= 0.1 / DIFFICULTY
 RADIUS	= 10
-RES	= [800, 480]
+RES	= [800, 600]
 WALL	= []
 BUG     = ()
 pygame.init()
@@ -22,7 +26,7 @@ class Mob():
     def __init__(self):
         self.headx = 100
         self.heady = 100
-        self.length = 6
+        self.length = START_LENGTH
         self.elements = [[self.headx, self.heady]]
 
         while len(self.elements) != (self.length - 1):
@@ -61,22 +65,19 @@ class Mob():
     def check_bug(self):
         """check_bug function
         """
-        print self.headx, self.heady, BUG
-
         if (self.headx, self.heady) == BUG:
-            print "mjamhm: %s"		% len(self.elements)
             self.elements.append(self.elements[-1])
             create_bug()
 
 def draw_map():
     """draw_map function
     """
-    for n in xrange(20, RES[0], 20):
+    for n in range(20, RES[0], 20):
         pygame.draw.circle(SCREEN, (0, 0, 255), (n, 20), 10)
         WALL.append([n, 20])
         pygame.draw.circle(SCREEN,(0, 0, 255),(n, RES[1] - 20), 10)
         WALL.append([n, RES[1] - 20])
-    for n in xrange(20, RES[1], 20):
+    for n in range(20, RES[1], 20):
         pygame.draw.circle(SCREEN, (0, 0, 255),(20, n), 10)
         WALL.append([20, n])
         pygame.draw.circle(SCREEN, (0, 0, 255), (RES[0] - 20, n), 10)
@@ -86,12 +87,11 @@ def draw_map():
 def create_bug():
     """create_bug function
     """
+    global BUG
     BUG = ()
     while ( list(BUG) in WALL ) or ( list(BUG) in SNAKE.elements) or (not BUG):
-#    while ( list(BUG) in WALL ) or ( list(BUG) in SNAKE.elements):
         BUG = (random.randrange(40, RES[0] - 40 , 20),
             (random.randrange(40, RES[1] - 40 , 20)))
-    print BUG	
 
     pygame.draw.circle(SCREEN, (255, 0, 0), BUG, RADIUS)
     pygame.display.flip()
@@ -126,6 +126,9 @@ def event_loop():
 def exit_dead():
     """exit_dead funtion
     """
+    print("Difficulty:\t%d" % DIFFICULTY)
+    print("Bugs eaten:\t%d" % (len(SNAKE.elements) - START_LENGTH + 1))
+    print("Score:\t\t%d" % ((len(SNAKE.elements) - START_LENGTH + 1) * DIFFICULTY))
     time.sleep(1)
     pygame.quit()
     sys.exit()
